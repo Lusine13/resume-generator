@@ -25,11 +25,11 @@ export const fetchUserProfileInfo = createAsyncThunk(`data/fetchUserProfileInfo`
                     if (userData.exists()) {
                         resolve(userData.data())
                     } else {
-                        resolve(null) //TODO ?
+                        resolve(null) 
                     }
                 })
             } else {
-                reject (`Ooops`)
+                reject ('Ooops')
             }
         })
     })
@@ -64,7 +64,6 @@ const userProfileSlice = createSlice({
         })
     }
 });
-
 export const { setIsAuth, setProfileImgUrl } = userProfileSlice.actions;
 
 export default userProfileSlice.reducer;
