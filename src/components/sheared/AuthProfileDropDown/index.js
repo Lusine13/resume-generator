@@ -44,6 +44,21 @@ const AuthProfileDropDown = ({ userProfileInfo }) => {
             onClick: () => navigate(ROUTE_CONSTANTS.EDUCATION)
         },
         {
+            label: 'Skills',
+            key: '2',
+            onClick: () => navigate(ROUTE_CONSTANTS.SKILLS)
+        },
+        {
+            label: 'Projects',
+            key: '3',
+            onClick: () => navigate(ROUTE_CONSTANTS.PROJECTS)
+        },
+        {
+            label: 'Social',
+            key: '4',
+            onClick: () => navigate(ROUTE_CONSTANTS.SOCIAL)
+        },
+        {
             label: 'Logout',
             key: 'logout',
             onClick: handleSignOut,
@@ -65,8 +80,7 @@ const AuthProfileDropDown = ({ userProfileInfo }) => {
                 boxShadow: token.boxShadowSecondary,
             }}
             >
-                <Flex vertical align='center' style={{padding: token.sizeMS}}>
-                    <Avatar src={userProfileInfo.imgUrl}/>
+                <Flex vertical align='center' style={{padding: token.sizeMS}}>                   
                     <Text>{userProfileInfo.firstName} {userProfileInfo.lastName}</Text>
                     <Text type="secondary" underline>{userProfileInfo.email}</Text>
                 </Flex>
