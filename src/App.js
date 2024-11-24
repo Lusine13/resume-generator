@@ -12,7 +12,7 @@ import ResumeLayout from './components/layouts/Resume';
 import Projects from './Resume/Projects';
 import Education from './Resume/Education Section';
 import Skills from './Resume/Skills Sector';
-
+import Social from './Resume/Social';
 
 const App = () => {       
     const dispatch = useDispatch();
@@ -38,11 +38,8 @@ const App = () => {
                     <Route path={ROUTE_CONSTANTS.PROFILE} element={<Profile/>}/>
                     <Route path={ROUTE_CONSTANTS.EDUCATION} element={<Education/>}/>
                     <Route path={ROUTE_CONSTANTS.SKILLS} element={<Skills/>}/>
-                    <Route path={ROUTE_CONSTANTS.PROJECTS} element={<Projects/>}/>
-                    
-                   
-                    { /*
-                    <Route path={ROUTE_CONSTANTS.SOCIAL} element={<Social/>}/> */}
+                    <Route path={ROUTE_CONSTANTS.PROJECTS} element={<Projects/>}/>                    
+                    <Route path={ROUTE_CONSTANTS.SOCIAL} element={<Social/>}/> 
                       </Route>
                     </Route>
                 )

@@ -59,10 +59,10 @@ const Projects = () => {
 
                
                 <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.EDUCATION}>
+                <Link to={ROUTE_CONSTANTS.SKILLS}>
                   BACK
                 </Link>
-                <Link to={ROUTE_CONSTANTS.SKILLS}>
+                <Link to={ROUTE_CONSTANTS.SOCIAL}>
                   NEXT
                 </Link>
                 <Button type="primary" htmlType="submit" loading={loading}>

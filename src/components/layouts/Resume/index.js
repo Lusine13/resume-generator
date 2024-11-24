@@ -26,6 +26,10 @@ const ResumeLayout = () => {
           
           <Outlet />
         </TabPane>
+        <TabPane tab="Social" key="5">
+          
+          <Outlet />
+        </TabPane>
       </Tabs>
     </div>
   );
