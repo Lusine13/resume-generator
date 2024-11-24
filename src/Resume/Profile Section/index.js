@@ -21,7 +21,7 @@ const Profile = () => {
         
         dispatch(fetchUserProfileInfo({ firstName, lastName, phoneNumber, address }));
         
-        navigate(ROUTE_CONSTANTS.EDUCATION);
+        navigate(ROUTE_CONSTANTS.PROFILE);
 
         setLoading(false);
     };

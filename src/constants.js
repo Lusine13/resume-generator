@@ -1,13 +1,15 @@
 export const regexpValidation = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+export const percValidation = /^[0-9]+(\.[0-9]{1,2})?$/;
+export const yearValidation = /^\d{4}$/;
 
 export const ROUTE_CONSTANTS  = {
   LOGIN: '/login',
   REGISTER: '/register',
-  PROFILE: '/profile',
-  EDUCATION: '/education',
-  PROJECTS: '/projects',
-  SKILLS: '/skills',
-  SOCIAL: '/social',  
+  PROFILE: '/resume/profile',
+  EDUCATION: '/resume/education',
+  PROJECTS: '/resume/projects',
+  SKILLS: '/resume/skills',
+  SOCIAL: '/resume/social',  
   
 }
 

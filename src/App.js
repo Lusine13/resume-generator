@@ -9,6 +9,9 @@ import { ROUTE_CONSTANTS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfileInfo } from './state-managment/slices/userProfile';
 import ResumeLayout from './components/layouts/Resume';
+import Projects from './Resume/Projects';
+import Education from './Resume/Education Section';
+import Skills from './Resume/Skills Sector';
 
 
 const App = () => {       
@@ -17,7 +20,7 @@ const App = () => {
     
     useEffect( () => {
         dispatch(fetchUserProfileInfo());
-    }, []);
+    }, [dispatch]);
 
    
     return (        
@@ -31,11 +34,14 @@ const App = () => {
                       <Route path={ROUTE_CONSTANTS.REGISTER} element={ isAuth ? <Navigate to={ROUTE_CONSTANTS.PROFILE}/> : <Register />}/>
                       
                       {/* Resume Section */}
-                    <Route path={ROUTE_CONSTANTS.PROFILE} element={isAuth? <ResumeLayout /> : <Navigate to={ROUTE_CONSTANTS.LOGIN}/>}>
+                    <Route  path="/resume"  element={isAuth? <ResumeLayout /> : <Navigate to={ROUTE_CONSTANTS.LOGIN}/>}>
                     <Route path={ROUTE_CONSTANTS.PROFILE} element={<Profile/>}/>
-                  { /* <Route path={ROUTE_CONSTANTS.EDUCATION} element={<Education/>}/>
-                    <Route path={ROUTE_CONSTANTS.PROJECTS} element={<Projects/>}/>
+                    <Route path={ROUTE_CONSTANTS.EDUCATION} element={<Education/>}/>
                     <Route path={ROUTE_CONSTANTS.SKILLS} element={<Skills/>}/>
+                    <Route path={ROUTE_CONSTANTS.PROJECTS} element={<Projects/>}/>
+                    
+                   
+                    { /*
                     <Route path={ROUTE_CONSTANTS.SOCIAL} element={<Social/>}/> */}
                       </Route>
                     </Route>
