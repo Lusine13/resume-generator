@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
 import { ROUTE_CONSTANTS } from "../../constants";
-//import './index.css';
+import './index.css';
 
 const Projects = () => {
     const [loading, setLoading] = useState(false);

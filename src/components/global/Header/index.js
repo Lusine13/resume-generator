@@ -12,7 +12,7 @@ const Header = () => {
      return (
         <div className="main_header">
             <Flex justify="space-between" align="center">  
-        <div>
+        <div className='header'>
            RESUME GENERATOR
         </div>            
         <div>
