@@ -16,7 +16,7 @@ const Skills = () => {
     const handleUserSkills = async () => {
         setLoading(true);
         dispatch(fetchUserProfileInfo({ skills }));
-        navigate(ROUTE_CONSTANTS.SKILLS);
+        navigate(ROUTE_CONSTANTS.PROJECTS);
         setLoading(false);
     };
 
@@ -71,12 +71,13 @@ const Skills = () => {
                 <Link to={ROUTE_CONSTANTS.EDUCATION}>
                   BACK
                 </Link>
-                <Link to={ROUTE_CONSTANTS.PROJECTS}>
+                <Link to={ROUTE_CONSTANTS.PROJECTS}
+                onClick={handleUserSkills}
+                disabled={loading || skills.length === 0}
+                >
                   NEXT
                 </Link>
-                <Button type="primary" htmlType="submit" loading={loading} onClick={handleUserSkills}>
-                 SAVE AND CONTINUE
-                </Button>
+                
                 </Flex>
             </div>
     );

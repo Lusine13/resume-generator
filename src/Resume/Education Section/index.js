@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Flex, Button } from 'antd';
+import { Form, Input, Flex } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
@@ -16,12 +16,16 @@ const Education = () => {
     const handleUserEducation = async (values) => {
         setLoading(true);
         const { courseName, college, percentage, year } = values;
+        try {      
         
         dispatch(fetchUserProfileInfo({ courseName, college, percentage, year }));
         
-        navigate(ROUTE_CONSTANTS.EDUCATION);
-
+        navigate(ROUTE_CONSTANTS.SKILLS);
+        } catch (error) {
+        console.error('Error saving data:', error);
+      } finally {
         setLoading(false);
+      }
     };
 
     
@@ -88,12 +92,14 @@ const Education = () => {
                 <Link to={ROUTE_CONSTANTS.PROFILE}>
                   BACK
                 </Link>                
-                <Link to={ROUTE_CONSTANTS.SKILLS}>
+                
+                <Link
+                      to={ROUTE_CONSTANTS.SKILLS}
+                      onClick={() => form.submit()}  
+                      disabled={loading || !form.isFieldsTouched || form.getFieldsError().some(({ errors }) => errors.length > 0)}
+                >
                   NEXT
                 </Link>
-                <Button type="primary" htmlType="submit" loading={loading}>
-                 SAVE AND CONTINUE
-                </Button>
                 </Flex>
             </Form>
         </div>

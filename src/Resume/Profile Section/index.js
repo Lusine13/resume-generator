@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Flex, message, Button } from 'antd';
+import { Form, Input, Flex, message } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
@@ -21,7 +21,7 @@ const Profile = () => {
         
         dispatch(fetchUserProfileInfo({ firstName, lastName, phoneNumber, address }));
         
-        navigate(ROUTE_CONSTANTS.PROFILE);
+        navigate(ROUTE_CONSTANTS.EDUCATION);
 
         setLoading(false);
     };
@@ -88,12 +88,13 @@ const Profile = () => {
                 </Form.Item>
 
                 <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.EDUCATION}>
+                <Link to={ROUTE_CONSTANTS.EDUCATION}
+                onClick={() => form.submit()}
+                disabled={loading || !form.isFieldsTouched() || form.getFieldsError().some(({ errors }) => errors.length > 0)} 
+                >
                   NEXT
                 </Link>
-                <Button type="primary" htmlType="submit" loading={loading}>
-                 SAVE AND CONTINUE
-                </Button>
+                
                 </Flex>
             </Form>
         </div>

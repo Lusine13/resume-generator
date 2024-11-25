@@ -15,7 +15,7 @@ const Header = () => {
         <div className='header'>
            RESUME GENERATOR
         </div>            
-        <div>
+        <div className='dropdown-container'>
             {
                 isAuth ? <AuthProfileDropDown userProfileInfo={userData}/> 
                 : <Link to={ROUTE_CONSTANTS.LOGIN}><Button>Sign in</Button></Link>

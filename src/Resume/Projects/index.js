@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Flex, Button } from 'antd';
+import { Form, Input, Flex } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
@@ -18,7 +18,7 @@ const Projects = () => {
         
         dispatch(fetchUserProfileInfo({ projectName, techStack, description }));
         
-        navigate(ROUTE_CONSTANTS.PROJECTS);
+        navigate(ROUTE_CONSTANTS.SOCIAL);
 
         setLoading(false);
     };
@@ -62,12 +62,13 @@ const Projects = () => {
                 <Link to={ROUTE_CONSTANTS.SKILLS}>
                   BACK
                 </Link>
-                <Link to={ROUTE_CONSTANTS.SOCIAL}>
+                <Link to={ROUTE_CONSTANTS.SOCIAL}
+                onClick={() => form.submit()} 
+                disabled={loading || !form.isFieldsTouched() || form.getFieldsError().some(({ errors }) => errors.length > 0)}  
+                >
                   NEXT
                 </Link>
-                <Button type="primary" htmlType="submit" loading={loading}>
-                 SAVE AND CONTINUE
-                </Button>
+               
                 </Flex>
             </Form>
         </div>
