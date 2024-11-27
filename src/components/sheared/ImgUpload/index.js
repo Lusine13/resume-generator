@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 
 const ImgUpload = ({ progress, uploading, handleUpload }) => {
-    const { userData: { imgUrl, uid }} = useSelector(store => store.userProfile.authUserInfo);
+    const { userData: { imgUrl, uid, firstName, lastName }} = useSelector(store => store.userProfile.authUserInfo);
            
     const uploadButton = ( 
         <button style={{ border: 0, background: 'none' }} type="button">
@@ -18,7 +18,8 @@ const ImgUpload = ({ progress, uploading, handleUpload }) => {
           <Upload
           fileList={[
             {
-                uid: uid,              
+                uid: uid,
+                name: `${firstName} ${lastName}`,
                 status: `done`,
                 url: imgUrl,
             },

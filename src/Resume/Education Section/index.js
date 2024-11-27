@@ -1,38 +1,35 @@
 import React, { useState } from "react";
-import { Form, Input, Flex } from 'antd';
+import { Form, Input, Button, Flex, message } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
 import { ROUTE_CONSTANTS, percValidation, yearValidation } from "../../constants";
-import './index.css';
 
 const Education = () => {
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();   
-  
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
+    
     const handleUserEducation = async (values) => {
-        setLoading(true);
-        const { courseName, college, percentage, year } = values;
-        try {      
-        
-        dispatch(fetchUserProfileInfo({ courseName, college, percentage, year }));
-        
-        navigate(ROUTE_CONSTANTS.SKILLS);
+        const { courseName, college, percentage, year } = values;        
+        try {           
+            const educationData = { courseName, college, percentage, year };
+            sessionStorage.setItem('education', JSON.stringify(educationData)); 
+            message.success('Education details saved successfully!');          
+            navigate(ROUTE_CONSTANTS.SKILLS); 
         } catch (error) {
-        console.error('Error saving data:', error);
-      } finally {
-        setLoading(false);
-      }
+            console.error('Error saving data:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    
     return (
         <div className='form_page_container'>
-            <Form layout="vertical" form={form} onFinish={handleUserEducation}>
-                <Form.Item
+            <Form 
+                layout="vertical" 
+                form={form} 
+                onFinish={handleUserEducation}               
+            >
+                 <Form.Item
                     label="Course Name"
                     name="courseName"
                     rules={[
@@ -86,20 +83,16 @@ const Education = () => {
                  >
                     <Input type="text" placeholder="Year" />
                 </Form.Item>
-             
-
                 <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.PROFILE}>
-                  BACK
-                </Link>                
-                
-                <Link
-                      to={ROUTE_CONSTANTS.SKILLS}
-                      onClick={() => form.submit()}  
-                      disabled={loading || !form.isFieldsTouched || form.getFieldsError().some(({ errors }) => errors.length > 0)}
-                >
-                  NEXT
-                </Link>
+                    <Link to={ROUTE_CONSTANTS.PROFILE}>BACK</Link>
+                    <Button 
+                    type="primary"
+                    loading={loading}
+                    onClick={() => form.submit()}
+                    disabled={loading || !form.isFieldsTouched || form.getFieldsError().some(({ errors }) => errors.length > 0)}
+                    >
+                    NEXT
+                </Button>
                 </Flex>
             </Form>
         </div>

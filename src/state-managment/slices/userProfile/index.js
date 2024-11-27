@@ -29,7 +29,7 @@ export const fetchUserProfileInfo = createAsyncThunk(`data/fetchUserProfileInfo`
                     }
                 })
             } else {
-                reject ('Ooops')
+                reject (`Ooops`)
             }
         })
     })
@@ -64,6 +64,7 @@ const userProfileSlice = createSlice({
         })
     }
 });
+
 export const { setIsAuth, setProfileImgUrl } = userProfileSlice.actions;
 
 export default userProfileSlice.reducer;

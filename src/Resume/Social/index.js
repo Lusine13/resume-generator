@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ROUTE_CONSTANTS } from "../../constants";
-import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
-import { Input, Flex, Button, Space, Tag} from 'antd';
+import { Link } from "react-router-dom";
+import { Input, Flex, Button, Space, Tag, message } from 'antd';
 import GeneratePDF from '../../GeneratePDF';
 import './index.css';
 
@@ -11,15 +9,16 @@ const Social = () => {
     const [loading, setLoading] = useState(false);    
     const [links, setLinks] = useState([]);  
     const [inputValue, setInputValue] = useState(""); 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const handleUserSocialLinks = async () => {
-        setLoading(true);
-        dispatch(fetchUserProfileInfo({ links }));
-        navigate(ROUTE_CONSTANTS.SOCIAL);
-        setLoading(false);
-    };
+    useEffect(() => {
+        const savedLinks = JSON.parse(sessionStorage.getItem('socialLinks')) || [];
+        setLinks(savedLinks);
+    }, []);
+
+    
+    useEffect(() => {
+        sessionStorage.setItem('socialLinks', JSON.stringify(links));
+    }, [links]);
 
     const handleAddLink = () => {
         if (inputValue && !links.includes(inputValue)) {
@@ -30,6 +29,13 @@ const Social = () => {
 
     const handleDeleteLink = (removedLink) => {
         setLinks(links.filter(link => link !== removedLink)); 
+    };
+
+    const handleUserSocialLinks = async () => {
+        setLoading(true);
+       
+        setLoading(false);
+        message.success('Social links saved successfully!');
     };
 
     return (
@@ -60,22 +66,22 @@ const Social = () => {
                 </Button>
             </Space>
 
-                <Flex align="flex-end" gap="10px" justify="flex-end">
+            <Flex align="flex-end" gap="10px" justify="flex-end">
                 <Link to={ROUTE_CONSTANTS.PROJECTS}>
                   BACK
                 </Link>
                 
                 <Button
-                type="primary" 
-                loading={loading}
-                onClick={handleUserSocialLinks}                
-                disabled={loading || links.length === 0}>
+                    type="primary" 
+                    loading={loading}
+                    onClick={handleUserSocialLinks}                
+                    disabled={loading || links.length === 0}>
                  SAVE
                 </Button>
 
                 <GeneratePDF />
-                </Flex>
-            </div>
+            </Flex>
+        </div>
     );
 };
 

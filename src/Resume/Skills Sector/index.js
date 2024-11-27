@@ -1,85 +1,68 @@
 import React, { useState } from "react";
-import { ROUTE_CONSTANTS } from "../../constants";
+import { Input, Tag, Button, Space, message, Flex } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
-import { Divider, Flex, Tag, Input, Button } from 'antd';
-import './index.css';
+import { ROUTE_CONSTANTS } from "../../constants";
 
 const Skills = () => {
     const [loading, setLoading] = useState(false);
-    const [skills, setSkills] = useState([]); 
-    const [inputValue, setInputValue] = useState(""); 
+    const [skills, setSkills] = useState([]);
+    const [inputValue, setInputValue] = useState("");
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    const handleUserSkills = async () => {
-        setLoading(true);
-        dispatch(fetchUserProfileInfo({ skills }));
-        navigate(ROUTE_CONSTANTS.PROJECTS);
-        setLoading(false);
-    };
 
     const handleAddSkill = () => {
         if (inputValue && !skills.includes(inputValue)) {
             setSkills([...skills, inputValue]);
-            setInputValue(""); 
+            setInputValue("");
         }
     };
 
     const handleDeleteSkill = (removedSkill) => {
-        setSkills(skills.filter(skill => skill !== removedSkill)); 
+        setSkills(skills.filter(skill => skill !== removedSkill));
+    };
+
+    const handleSaveSkills = () => {      
+        setLoading(true);        
+        sessionStorage.setItem('skills', JSON.stringify(skills));
+      
+        setTimeout(() => {
+            message.success('Skills saved successfully!');
+            setLoading(false); 
+            navigate(ROUTE_CONSTANTS.PROJECTS);
+        }, 1000); 
     };
 
     return (
         <div className='container'>
-            <Flex gap="4px 0" wrap>
-                {skills.map((skill, index) => (
-                    <Tag 
-                        key={index} 
-                        bordered={false} 
-                        closable
-                        onClose={() => handleDeleteSkill(skill)}
-                    >
-                        {skill}
-                    </Tag>
-                ))}
-            </Flex>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                    {skills.map((skill, index) => (
+                        <Tag key={index} closable onClose={() => handleDeleteSkill(skill)}>{skill}</Tag>
+                    ))}
+                </div>
 
-            <Divider />
-
-            <div>
-                <Input 
+                <Input
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)} 
-                    onPressEnter={handleAddSkill} 
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onPressEnter={handleAddSkill}
                     placeholder="Enter a skill"
-                    style={{ width: 200, marginRight: 10 }}
+                    style={{ width: 200, marginBottom: 10 }}
                 />
+
+                <Button type="primary" onClick={handleAddSkill}>Add Skill</Button>
+            </Space>
+
+            <Flex align="flex-end" gap="10px" justify="flex-end">
+                <Link to={ROUTE_CONSTANTS.PROFILE}>BACK</Link>
                 <Button 
                     type="primary" 
-                    onClick={handleAddSkill} 
+                    loading={loading} 
+                    onClick={handleSaveSkills} 
+                    disabled={loading || skills.length === 0} 
                 >
-                    Add Skill
+                    NEXT
                 </Button>
-            </div>
-
-            <Divider />
-
-            
-            <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.EDUCATION}>
-                  BACK
-                </Link>
-                <Link to={ROUTE_CONSTANTS.PROJECTS}
-                onClick={handleUserSkills}
-                disabled={loading || skills.length === 0}
-                >
-                  NEXT
-                </Link>
-                
-                </Flex>
-            </div>
+            </Flex>
+        </div>
     );
 };
 

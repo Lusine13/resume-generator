@@ -1,98 +1,112 @@
-import { jsPDF } from "jspdf";
+import React from "react";
 import { Button } from 'antd';
-import { useSelector } from 'react-redux'; 
+import { jsPDF } from "jspdf";
+import './index.css';
 
 const GeneratePDF = () => {
-  
-  const { authUserInfo: { userData }, educationData, skillsData, projectsData, socialLinksData } = useSelector((store) => store.userProfile);
+    const generatePDF = () => {
+        
+        const profile = JSON.parse(sessionStorage.getItem('profile'));
+        const skills = JSON.parse(sessionStorage.getItem('skills'));
+        const education = JSON.parse(sessionStorage.getItem('education'));
+        const projects = JSON.parse(sessionStorage.getItem('projects'));
+        const socialLinks = JSON.parse(sessionStorage.getItem('socialLinks'));
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+        if (!profile) {
+            alert("Profile data not available");
+            return;
+        }
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
+        const doc = new jsPDF();
+        doc.setFont("helvetica", "normal");
 
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("Profile", 10, 20);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Name: ${userData.firstName} ${userData.lastName}`, 10, 30);
-    doc.text(`Email: ${userData.email}`, 10, 40);
+        // Profile Section 
+        doc.setFillColor(242, 242, 242); 
+        doc.rect(0, 0, 210, 30, 'F'); 
+        doc.setFontSize(22);
+        doc.setTextColor(50, 50, 50); 
+        doc.text("Profile", 10, 20);
 
-    
-    doc.setDrawColor(0, 0, 0);
-    doc.line(10, 45, 200, 45);
+        
+        if (profile.imageUrl) {            
+            doc.addImage(profile.imageUrl, 'JPEG', 150, 30, 40, 40);  
+        } else {
+            console.log('No image URL available');
+        }
 
-    if (Array.isArray(educationData) && educationData.length > 0) {
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.text("Education", 10, 60);
-      doc.setFont("helvetica", "normal");
-      educationData.forEach((edu, index) => {
-        const yPosition = 70 + index * 20;
-        doc.text(`${edu.degree} in ${edu.field}`, 10, yPosition);
-        doc.text(`${edu.institution}, ${edu.year}`, 10, yPosition + 10);
-      });
-    } else {
-      doc.text("No Education Information Provided", 10, 60);
-    }
+        // Profile Details
+        doc.setFontSize(12);
+        doc.setTextColor(80, 80, 80); 
+        doc.text(`Name: ${profile.firstName} ${profile.lastName}`, 10, 40);
+        doc.text(`Phone: ${profile.phoneNumber}`, 10, 50);
+        doc.text(`Address: ${profile.address}`, 10, 60);
 
-  
-    doc.line(10, 100, 200, 100);
+        // Skills Section
+        doc.setFontSize(18);
+        doc.setTextColor(44, 62, 80); 
+        doc.text("Skills", 10, 80);
 
-   
-    if (Array.isArray(skillsData) && skillsData.length > 0) {
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.text("Skills", 10, 110);
-      doc.setFont("helvetica", "normal");
-      doc.text(skillsData.join(", "), 10, 120);
-    } else {
-      doc.text("No Skills Provided", 10, 110);
-    }
+        doc.setFontSize(12);
+        doc.setTextColor(85, 85, 85); 
+        skills.forEach((skill, index) => {
+            doc.text(`${index + 1}. ${skill}`, 10, 90 + index * 10);
+        });
 
-    doc.line(10, 130, 200, 130);
+        // Education Section
+        doc.setFontSize(18);
+        doc.setTextColor(44, 62, 80);
+        doc.text("Education", 10, 130);
 
-  
-    if (Array.isArray(projectsData) && projectsData.length > 0) {
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.text("Projects", 10, 140);
-      doc.setFont("helvetica", "normal");
-      projectsData.forEach((project, index) => {
-        const yPosition = 150 + index * 20;
-        doc.text(`${project.name}:`, 10, yPosition);
-        doc.text(project.description, 30, yPosition);
-      });
-    } else {
-      doc.text("No Projects Information Provided", 10, 140);
-    }
+        if (education) {
+            doc.setFontSize(12);
+            doc.setTextColor(85, 85, 85);
+            const { courseName, college, percentage, year } = education;
+            doc.text(`Course Name: ${courseName}`, 10, 140);
+            doc.text(`College: ${college}`, 10, 150);
+            doc.text(`Percentage: ${percentage}`, 10, 160);
+            doc.text(`Graduation Year: ${year}`, 10, 170);
+        }
 
- 
-    doc.line(10, 180, 200, 180);
+        // Projects Section
+        doc.setFontSize(18);
+        doc.setTextColor(44, 62, 80);
+        doc.text("Projects", 10, 190);
 
+        if (projects) {
+            doc.setFontSize(12);
+            doc.setTextColor(85, 85, 85);
+            doc.text(`Project Name: ${projects.projectName}`, 10, 200);
+            doc.text(`Tech Stack: ${projects.techStack}`, 10, 210);
+            doc.text(`Description: ${projects.description}`, 10, 220);
+        }
 
-    if (Array.isArray(socialLinksData) && socialLinksData.length > 0) {
-      doc.setFontSize(18);
-      doc.setFont("helvetica", "bold");
-      doc.text("Social Links", 10, 190);
-      doc.setFont("helvetica", "normal");
-      socialLinksData.forEach((link, index) => {
-        const yPosition = 200 + index * 10;
-        doc.text(link, 10, yPosition);
-      });
-    } else {
-      doc.text("No Social Links Provided", 10, 190);
-    }
+        // Social Links Section
+        doc.setFontSize(18);
+        doc.setTextColor(44, 62, 80);
+        doc.text("Social Links", 10, 240);
 
-    doc.output('dataurlnewwindow');
-  };
+        if (socialLinks) {
+            doc.setFontSize(12);
+            doc.setTextColor(85, 85, 85);
+            socialLinks.forEach((link, index) => {
+                doc.text(`${index + 1}. ${link}`, 10, 250 + index * 10);
+            });
+        }
 
-  return (
-    <Button type="primary" onClick={generatePDF}>
-      Generate PDF
-    </Button>
-  );
+        
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        
+        const pdfWindow = window.open(pdfUrl, '_blank');
+        pdfWindow.focus();
+    };
+
+    return (
+        <Button type="primary" onClick={generatePDF}>
+            View PDF
+        </Button>
+    );
 };
 
 export default GeneratePDF;

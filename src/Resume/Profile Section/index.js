@@ -1,45 +1,81 @@
 import React, { useState } from "react";
-import { Form, Input, Flex, message } from 'antd';
-import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { fetchUserProfileInfo } from '../../state-managment/slices/userProfile'; 
-import { ROUTE_CONSTANTS } from "../../constants";
-import ImgUpload from "../../components/sheared/ImgUpload";
+import { Form, Input,Flex, Button, message, notification } from 'antd';
+import { useNavigate } from "react-router-dom";
+import { doc, updateDoc } from "firebase/firestore";
+import ImgUpload from "../../components/sheared/ImgUpload"; // Ensure correct path
+import { ROUTE_CONSTANTS,  FIRESTORE_PATH_NAMES, STORAGE_PATH_NAMES } from "../../constants";
+import { db, storage } from '../../firebase';
+import { useDispatch, useSelector } from 'react-redux';
+import { setProfileImgUrl } from '../../state-managment/slices/userProfile';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import './index.css';
 
 const Profile = () => {
+    const dispatch = useDispatch(); 
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
     const [uploading, setUploading] = useState(false);
+    const { authUserInfo: { userData } } = useSelector((store) => store.userProfile); 
+    const { uid, ...restData } = userData;
     const [progress, setProgress] = useState(0);
+    const [imageUrl, setImageUrl] = useState(""); 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     const handleUserProfile = async (values) => {
         setLoading(true);
         const { firstName, lastName, phoneNumber, address } = values;
         
-        dispatch(fetchUserProfileInfo({ firstName, lastName, phoneNumber, address }));
+        sessionStorage.setItem('profile', JSON.stringify({ firstName, lastName, phoneNumber, address, imageUrl }));
+        console.log('Profile Image URL:', imageUrl);        
+        message.success('Profile details saved successfully!');       
         
         navigate(ROUTE_CONSTANTS.EDUCATION);
-
         setLoading(false);
     };
 
-    const handleUpload = ({ file }) => {
+    const handleUpload = ({file}) => {
         setUploading(true);
-        
-        setTimeout(() => {
+        const storageRef = ref(storage, `${STORAGE_PATH_NAMES.PROFILE_IMAGES}/${uid}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+      
+        uploadTask.on('state_changed', (snapshot) => {                
+            const progressValue = Math.round((snapshot.bytesTransferred/snapshot.totalBytes) * 100);
+            setProgress(progressValue);
+        },
+            (error) => {
             setUploading(false);
             setProgress(0);
-            message.success('Upload successful');
-        }, 2000);
-    };
-
+            message.error('Error aploading file: ${error.message');
+        },
+            () => {
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((imgUrl) => {
+                setUploading(false);
+                setProgress(0);                
+                dispatch(setProfileImgUrl(imgUrl));
+                setImageUrl(imgUrl);
+                updateUserProfileImg(imgUrl);
+                message.success('Upload successful');
+            })                
+        }
+      );
+    }  
+    
+    const updateUserProfileImg = async (imgUrl) => {
+        try {
+            const userDocRef = doc(db, FIRESTORE_PATH_NAMES.REGISTERED_USERS, uid);
+            await updateDoc(userDocRef, { imgUrl });
+        } catch {
+            notification.error({
+                message: 'Error :('
+            });
+        }
+    }
+    
     return (
         <div className='form_page_container'>
             <Form layout="vertical" form={form} onFinish={handleUserProfile}>
-                <Form.Item
+            <Form.Item
                     label="First Name"
                     name="firstName"
                     rules={[
@@ -78,7 +114,6 @@ const Profile = () => {
                     <Input type="text" placeholder="Address" />
                 </Form.Item>
                
-
                 <Form.Item label="Profile Image">
                     <ImgUpload
                         handleUpload={handleUpload}
@@ -86,15 +121,15 @@ const Profile = () => {
                         uploading={uploading}
                     />
                 </Form.Item>
-
                 <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.EDUCATION}
-                onClick={() => form.submit()}
-                disabled={loading || !form.isFieldsTouched() || form.getFieldsError().some(({ errors }) => errors.length > 0)} 
+                <Button 
+                    type="primary"
+                    loading={loading}
+                    onClick={() => form.submit()}
+                    disabled={loading}
                 >
-                  NEXT
-                </Link>
-                
+                    NEXT
+                </Button>
                 </Flex>
             </Form>
         </div>
