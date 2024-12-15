@@ -3,19 +3,9 @@ import { Button } from 'antd';
 import { jsPDF } from "jspdf";
 import './index.css';
 
-const GeneratePDF = () => {
+const GeneratePDF = ({ userProfileInfo }) => {
     const generatePDF = () => {
-        
-        const profile = JSON.parse(sessionStorage.getItem('profile'));
-        const skills = JSON.parse(sessionStorage.getItem('skills'));
-        const education = JSON.parse(sessionStorage.getItem('education'));
-        const projects = JSON.parse(sessionStorage.getItem('projects'));
-        const socialLinks = JSON.parse(sessionStorage.getItem('socialLinks'));
-
-        if (!profile) {
-            alert("Profile data not available");
-            return;
-        }
+        const { name, lastname, email, profile, education, projects, skills, social } = userProfileInfo || {};
 
         const doc = new jsPDF();
         doc.setFont("helvetica", "normal");
@@ -27,8 +17,7 @@ const GeneratePDF = () => {
         doc.setTextColor(50, 50, 50); 
         doc.text("Profile", 10, 20);
 
-        
-        if (profile.imageUrl) {            
+        if (profile?.imageUrl) {            
             doc.addImage(profile.imageUrl, 'JPEG', 150, 30, 40, 40);  
         } else {
             console.log('No image URL available');
@@ -37,9 +26,10 @@ const GeneratePDF = () => {
         // Profile Details
         doc.setFontSize(12);
         doc.setTextColor(80, 80, 80); 
-        doc.text(`Name: ${profile.firstName} ${profile.lastName}`, 10, 40);
-        doc.text(`Phone: ${profile.phoneNumber}`, 10, 50);
-        doc.text(`Address: ${profile.address}`, 10, 60);
+        doc.text(`Name: ${profile?.resumeName || name} ${profile?.resumeLastName || lastname}`, 10, 40);
+        doc.text(`Phone: ${profile?.phone || 'None'}`, 10, 50);
+        doc.text(`Email: ${email}`, 10, 60);
+        doc.text(`Address: ${profile?.address || ""}`, 10, 70);
 
         // Skills Section
         doc.setFontSize(18);
@@ -48,7 +38,7 @@ const GeneratePDF = () => {
 
         doc.setFontSize(12);
         doc.setTextColor(85, 85, 85); 
-        skills.forEach((skill, index) => {
+        skills?.forEach((skill, index) => {
             doc.text(`${index + 1}. ${skill}`, 10, 90 + index * 10);
         });
 
@@ -85,26 +75,26 @@ const GeneratePDF = () => {
         doc.setTextColor(44, 62, 80);
         doc.text("Social Links", 10, 240);
 
-        if (socialLinks) {
+        if (social) {
             doc.setFontSize(12);
             doc.setTextColor(85, 85, 85);
-            socialLinks.forEach((link, index) => {
-                doc.text(`${index + 1}. ${link}`, 10, 250 + index * 10);
-            });
+            doc.text(`FB: ${social.fb}`, 10, 250);
+            doc.text(`LinkedIn: ${social.linkedin}`, 10, 260);
+            doc.text(`Other: ${social.other}`, 10, 270);
         }
 
-        
+        // Create a Blob from the PDF content
         const pdfBlob = doc.output('blob');
         const pdfUrl = URL.createObjectURL(pdfBlob);
 
-        
+        // Open the PDF in a new tab
         const pdfWindow = window.open(pdfUrl, '_blank');
-        pdfWindow.focus();
+        pdfWindow.focus(); // Focus the new tab
     };
 
     return (
         <Button type="primary" onClick={generatePDF}>
-            View PDF
+            Generate PDF
         </Button>
     );
 };

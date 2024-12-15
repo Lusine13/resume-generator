@@ -1,46 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { ROUTE_CONSTANTS } from "../../constants";
 import { Link } from "react-router-dom";
-import { Input, Flex, Button, Space, Tag, message } from 'antd';
-import GeneratePDF from '../../GeneratePDF';
+import { Input, Button, message, Space, Tag, Flex } from "antd";
+import GeneratePDF from "../../GeneratePDF";
 import './index.css';
 
 const Social = () => {
-    const [loading, setLoading] = useState(false);    
-    const [links, setLinks] = useState([]);  
-    const [inputValue, setInputValue] = useState(""); 
+    const [fb, setFb] = useState("");
+    const [linkedin, setLinkedin] = useState("");
+    const [other, setOther] = useState("");
+    const [links, setLinks] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+     useEffect(() => {
         const savedLinks = JSON.parse(sessionStorage.getItem('socialLinks')) || [];
         setLinks(savedLinks);
     }, []);
 
-    
-    useEffect(() => {
+     useEffect(() => {
         sessionStorage.setItem('socialLinks', JSON.stringify(links));
     }, [links]);
 
-    const handleAddLink = () => {
-        if (inputValue && !links.includes(inputValue)) {
-            setLinks([...links, inputValue]);
-            setInputValue(""); 
+     const handleAddLink = (link) => {
+        if (link && !links.includes(link)) {
+            setLinks([...links, link]);
+        } else if (!link) {
+            message.error("Please enter a valid link.");
+        } else {
+            message.warning("This link is already added.");
         }
     };
 
-    const handleDeleteLink = (removedLink) => {
-        setLinks(links.filter(link => link !== removedLink)); 
+     const handleDeleteLink = (removedLink) => {
+        setLinks(links.filter(link => link !== removedLink));
     };
 
+    // Handle saving the links
     const handleUserSocialLinks = async () => {
         setLoading(true);
-       
+        // Add your saving logic here (e.g., API call or further processing)
         setLoading(false);
         message.success('Social links saved successfully!');
     };
 
     return (
         <div className='container'>
-             <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction="vertical" style={{ width: '100%' }}>
                 <div>
                     {links.map((link, index) => (
                         <Tag 
@@ -53,33 +58,59 @@ const Social = () => {
                     ))}
                 </div>
 
-                <Input 
-                    value={inputValue} 
-                    onChange={(e) => setInputValue(e.target.value)} 
-                    onPressEnter={handleAddLink} 
-                    placeholder="Enter social media link" 
-                    style={{ width: 300, marginBottom: 10 }} 
+                {/* Facebook Link Input */}
+                <label>Facebook Link</label>
+                <Input
+                    value={fb}
+                    onChange={(e) => setFb(e.target.value)}
+                    type="text"
+                    placeholder="Facebook Link"
+                    style={{ fontSize: "16px", marginBottom: "10px" }}
                 />
+                <Button type="primary" onClick={() => handleAddLink(fb)}>
+                    Add Facebook Link
+                </Button>
 
-                <Button type="primary" onClick={handleAddLink}>
-                    Add Link
+                {/* LinkedIn Link Input */}
+                <label>LinkedIn Link</label>
+                <Input
+                    value={linkedin}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                    type="text"
+                    placeholder="LinkedIn Link"
+                    style={{ fontSize: "16px", marginBottom: "10px" }}
+                />
+                <Button type="primary" onClick={() => handleAddLink(linkedin)}>
+                    Add LinkedIn Link
+                </Button>
+
+                {/* Other Link Input */}
+                <label>Any Other Link</label>
+                <Input
+                    value={other}
+                    onChange={(e) => setOther(e.target.value)}
+                    type="text"
+                    placeholder="GitHub, Behance, etc."
+                    style={{ fontSize: "16px", marginBottom: "10px" }}
+                />
+                <Button type="primary" onClick={() => handleAddLink(other)}>
+                    Add Other Link
                 </Button>
             </Space>
+           
 
-            <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.PROJECTS}>
-                  BACK
-                </Link>
-                
-                <Button
+            <Flex align="flex-end" gap="10px" justify="flex-end">            
+            <Link to={ROUTE_CONSTANTS.PROJECTS}>BACK</Link>               
+                <Button 
                     type="primary" 
                     loading={loading}
-                    onClick={handleUserSocialLinks}                
-                    disabled={loading || links.length === 0}>
-                 SAVE
-                </Button>
-
-                <GeneratePDF />
+                    onClick={handleUserSocialLinks} 
+                    disabled={loading || links.length === 0}
+                >
+                    SAVE
+                </Button>             
+               
+                <GeneratePDF />          
             </Flex>
         </div>
     );

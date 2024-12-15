@@ -13,6 +13,7 @@ import Projects from './Resume/Projects';
 import Education from './Resume/Education Section';
 import Skills from './Resume/Skills Sector';
 import Social from './Resume/Social';
+import './App.css'
 
 const App = () => {       
     const dispatch = useDispatch();
