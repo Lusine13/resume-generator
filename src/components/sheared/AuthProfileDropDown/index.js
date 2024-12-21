@@ -5,9 +5,7 @@ import { ROUTE_CONSTANTS } from '../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setIsAuth } from '../../../state-managment/slices/userProfile';
-import GeneratePDF from '../../../GeneratePDF';
 import './index.css';
-
 
 
 const { useToken } = theme;
@@ -59,7 +57,7 @@ const AuthProfileDropDown = ({ userProfileInfo }) => {
             label: 'Social',
             key: '4',
             onClick: () => navigate(ROUTE_CONSTANTS.SOCIAL)
-        },        
+        },
         {
             label: 'Logout',
             key: 'logout',

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Flex, message } from 'antd';
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ROUTE_CONSTANTS} from "../../constants";
 import GeneratePDF from "../../GeneratePDF";
 import './index.css';
@@ -8,8 +8,7 @@ import './index.css';
 const Social = () => {
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();   
-    const navigate = useNavigate();
-    
+        
     const handleUserSocialLinks = async (values) => {
         const { facebookLinkName, linkedinLinkName, otherLinkName } = values;        
         try {           

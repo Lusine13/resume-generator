@@ -16,7 +16,7 @@ const Profile = () => {
     const [form] = Form.useForm();
     const [uploading, setUploading] = useState(false);
     const { authUserInfo: { userData } } = useSelector((store) => store.userProfile); 
-    const { uid, ...restData } = userData;
+    const { uid } = userData;
     const [progress, setProgress] = useState(0);
     const [imageUrl, setImageUrl] = useState(""); 
     const navigate = useNavigate();

@@ -20,10 +20,10 @@ const GeneratePDF = () => {
         let profileData = sessionStorage.getItem("profile");
         profileData = JSON.parse(profileData); 
         
-        doc.text(`${profileData?.firstName} ${profileData?.lastName}`, 10, 20); 
+        doc.text(`${profileData?.firstName} ${profileData?.lastName}`, 10, 25); 
         doc.setFontSize(20);               
-        doc.text(`Address: ${profileData?.address || ""}`, 10, 30);
-        doc.text(`Phone: ${profileData?.phoneNumber || 'None'}`, 10, 40); 
+        doc.text(`Address: ${profileData?.address || ""}`, 10, 40);
+        doc.text(`Phone: ${profileData?.phoneNumber || 'None'}`, 10, 50); 
         if (profileData?.imageUrl) {
             console.log("Image URL:", profileData?.imageUrl); 
             doc.addImage(profileData?.imageUrl, 'JPEG', 150, 30, 40, 40);
