@@ -31,6 +31,7 @@ const App = () => {
             createBrowserRouter(
                 createRoutesFromElements(
                     <Route path="/" element={<MainLayout />}>
+                        <Route path="/" element={isAuth ? <Navigate to={ROUTE_CONSTANTS.RESUME}/> : <Navigate to={ROUTE_CONSTANTS.REGISTER} />} />  
                       <Route path={ROUTE_CONSTANTS.LOGIN} element={ isAuth ? <Navigate to={ROUTE_CONSTANTS.PROFILE}/> : <Login />}/>                   
                       <Route path={ROUTE_CONSTANTS.REGISTER} element={ isAuth ? <Navigate to={ROUTE_CONSTANTS.PROFILE}/> : <Register />}/>
                       

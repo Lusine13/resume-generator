@@ -3,85 +3,91 @@ import { Button } from 'antd';
 import { jsPDF } from "jspdf";
 import './index.css';
 
-const GeneratePDF = ({ userProfileInfo }) => {
-    const generatePDF = () => {
-        const { name, lastname, email, profile, education, projects, skills, social } = userProfileInfo || {};
+const GeneratePDF = () => {
+    const generatePDF = () => {     
 
         const doc = new jsPDF();
         doc.setFont("helvetica", "normal");
+      
 
         // Profile Section 
-        doc.setFillColor(242, 242, 242); 
-        doc.rect(0, 0, 210, 30, 'F'); 
-        doc.setFontSize(22);
+        doc.setFillColor(137, 155, 180); 
+        doc.rect(0, 0, 210, 60, 'F'); 
+        doc.setFontSize(24);
         doc.setTextColor(50, 50, 50); 
-        doc.text("Profile", 10, 20);
-
-        if (profile?.imageUrl) {            
-            doc.addImage(profile.imageUrl, 'JPEG', 150, 30, 40, 40);  
+       
+   
+        let profileData = sessionStorage.getItem("profile");
+        profileData = JSON.parse(profileData); 
+        
+        doc.text(`${profileData?.firstName} ${profileData?.lastName}`, 10, 20); 
+        doc.setFontSize(20);               
+        doc.text(`Address: ${profileData?.address || ""}`, 10, 30);
+        doc.text(`Phone: ${profileData?.phoneNumber || 'None'}`, 10, 40); 
+        if (profileData?.imageUrl) {
+            console.log("Image URL:", profileData?.imageUrl); 
+            doc.addImage(profileData?.imageUrl, 'JPEG', 150, 30, 40, 40);
         } else {
-            console.log('No image URL available');
+            console.log("No image URL found.");
         }
-
-        // Profile Details
-        doc.setFontSize(12);
-        doc.setTextColor(80, 80, 80); 
-        doc.text(`Name: ${profile?.resumeName || name} ${profile?.resumeLastName || lastname}`, 10, 40);
-        doc.text(`Phone: ${profile?.phone || 'None'}`, 10, 50);
-        doc.text(`Email: ${email}`, 10, 60);
-        doc.text(`Address: ${profile?.address || ""}`, 10, 70);
-
-        // Skills Section
-        doc.setFontSize(18);
-        doc.setTextColor(44, 62, 80); 
-        doc.text("Skills", 10, 80);
-
-        doc.setFontSize(12);
-        doc.setTextColor(85, 85, 85); 
-        skills?.forEach((skill, index) => {
-            doc.text(`${index + 1}. ${skill}`, 10, 90 + index * 10);
-        });
-
+          
+        
         // Education Section
+        doc.setFillColor(240, 240, 240); 
+        doc.rect(0, 60, 210, 250, 'F');        
         doc.setFontSize(18);
         doc.setTextColor(44, 62, 80);
-        doc.text("Education", 10, 130);
+        let educationData = sessionStorage.getItem("education");
+        educationData = JSON.parse(educationData); 
+        doc.text("Education", 10, 80);
 
-        if (education) {
-            doc.setFontSize(12);
-            doc.setTextColor(85, 85, 85);
-            const { courseName, college, percentage, year } = education;
-            doc.text(`Course Name: ${courseName}`, 10, 140);
-            doc.text(`College: ${college}`, 10, 150);
-            doc.text(`Percentage: ${percentage}`, 10, 160);
-            doc.text(`Graduation Year: ${year}`, 10, 170);
-        }
+        doc.setFontSize(12);
+        doc.setTextColor(85, 85, 85);            
+        doc.text(`Course Name: ${educationData?.courseName}`, 10, 90);
+        doc.text(`College: ${educationData?.college}`, 10, 100);
+        doc.text(`Percentage: ${educationData?.percentage}`, 10, 110);
+        doc.text(`Graduation Year: ${educationData?.year}`, 10, 120);       
 
         // Projects Section
         doc.setFontSize(18);
         doc.setTextColor(44, 62, 80);
-        doc.text("Projects", 10, 190);
+        let projectsData = sessionStorage.getItem("projects");
+        projectsData = JSON.parse(projectsData); 
+        doc.text("Projects", 10, 140);
+     
+        doc.setFontSize(12);
+        doc.setTextColor(85, 85, 85);
+        doc.text(`Project Name: ${projectsData?.projectName}`, 10, 150);
+        doc.text(`Tech Stack: ${projectsData?.techStack}`, 10, 160);
+        doc.text(`Description: ${projectsData?.description}`, 10, 170);
+  
+        // Skills Section
+        doc.setFontSize(18);
+        doc.setTextColor(44, 62, 80); 
+        let skillsData = sessionStorage.getItem("skills");
+        skillsData = JSON.parse(skillsData); 
+        doc.text("Skills", 10, 190);
 
-        if (projects) {
-            doc.setFontSize(12);
-            doc.setTextColor(85, 85, 85);
-            doc.text(`Project Name: ${projects.projectName}`, 10, 200);
-            doc.text(`Tech Stack: ${projects.techStack}`, 10, 210);
-            doc.text(`Description: ${projects.description}`, 10, 220);
-        }
+        doc.setFontSize(12);
+        doc.setTextColor(85, 85, 85); 
+        skillsData?.forEach((skill, index) => {
+            doc.text(`${index + 1}. ${skill}`, 10, 200 + index * 10);
+        });
 
         // Social Links Section
         doc.setFontSize(18);
         doc.setTextColor(44, 62, 80);
-        doc.text("Social Links", 10, 240);
+        let socialLinksData = sessionStorage.getItem("socialLinks");
+        socialLinksData = JSON.parse(socialLinksData); 
+        doc.text("Social Links", 10, 230);
 
-        if (social) {
-            doc.setFontSize(12);
-            doc.setTextColor(85, 85, 85);
-            doc.text(`FB: ${social.fb}`, 10, 250);
-            doc.text(`LinkedIn: ${social.linkedin}`, 10, 260);
-            doc.text(`Other: ${social.other}`, 10, 270);
-        }
+        doc.setFontSize(12);
+        doc.setTextColor(85, 85, 85);
+        doc.text(`Facebook: ${socialLinksData?.facebookLinkName}`, 10, 240);
+        doc.text(`LinkedIn: ${socialLinksData?.linkedinLinkName}`, 10, 250);
+        doc.text(`Other: ${socialLinksData?.otherLinkName}`, 10, 260);
+        
+          
 
         // Create a Blob from the PDF content
         const pdfBlob = doc.output('blob');
@@ -89,7 +95,7 @@ const GeneratePDF = ({ userProfileInfo }) => {
 
         // Open the PDF in a new tab
         const pdfWindow = window.open(pdfUrl, '_blank');
-        pdfWindow.focus(); // Focus the new tab
+        pdfWindow.focus(); 
     };
 
     return (

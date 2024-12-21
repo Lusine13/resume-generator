@@ -26,7 +26,7 @@ const Profile = () => {
         const { firstName, lastName, phoneNumber, address } = values;
         
         sessionStorage.setItem('profile', JSON.stringify({ firstName, lastName, phoneNumber, address, imageUrl }));
-        console.log('Profile Image URL:', imageUrl);        
+                
         message.success('Profile details saved successfully!');       
         
         navigate(ROUTE_CONSTANTS.EDUCATION);
@@ -36,6 +36,7 @@ const Profile = () => {
     const handleUpload = ({file}) => {
         setUploading(true);
         const storageRef = ref(storage, `${STORAGE_PATH_NAMES.PROFILE_IMAGES}/${uid}`);
+           
         const uploadTask = uploadBytesResumable(storageRef, file);
       
         uploadTask.on('state_changed', (snapshot) => {                
@@ -60,7 +61,7 @@ const Profile = () => {
         }
       );
     }  
-    
+    //http://localhost:3000/logo192.png
     const updateUserProfileImg = async (imgUrl) => {
         try {
             const userDocRef = doc(db, FIRESTORE_PATH_NAMES.REGISTERED_USERS, uid);
