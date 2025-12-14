@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input, Tag, Button, Space, message, Flex } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
 import { ROUTE_CONSTANTS } from "../../constants";
@@ -8,38 +8,55 @@ const Skills = () => {
     const [skills, setSkills] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const navigate = useNavigate();
+    
+    useEffect(() => {
+        const storedSkills = localStorage.getItem("skills");
+        if (storedSkills) {
+            setSkills(JSON.parse(storedSkills));
+        }
+    }, []);
 
     const handleAddSkill = () => {
-        if (inputValue && !skills.includes(inputValue)) {
-            setSkills([...skills, inputValue]);
+        if (inputValue.trim() && !skills.includes(inputValue.trim())) {
+            setSkills([...skills, inputValue.trim()]);
             setInputValue("");
         }
     };
 
     const handleDeleteSkill = (removedSkill) => {
-        setSkills(skills.filter(skill => skill !== removedSkill));
+        const updatedSkills = skills.filter(skill => skill !== removedSkill);
+        setSkills(updatedSkills);
+        
+        localStorage.setItem("skills", JSON.stringify(updatedSkills));
     };
 
     const handleSaveSkills = () => {      
-        setLoading(true);        
-        sessionStorage.setItem('skills', JSON.stringify(skills));
+        setLoading(true);
+        
+        localStorage.setItem("skills", JSON.stringify(skills));
       
         setTimeout(() => {
             message.success('Skills saved successfully!');
-            setLoading(false); 
+            setLoading(false);
             navigate(ROUTE_CONSTANTS.PROJECTS);
-        }, 1000); 
+        }, 700);
     };
 
     return (
         <div className='container'>
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space direction="vertical" style={{ width: '100%' }}>                
                 <div>
                     {skills.map((skill, index) => (
-                        <Tag key={index} closable onClose={() => handleDeleteSkill(skill)}>{skill}</Tag>
+                        <Tag 
+                            key={index} 
+                            closable 
+                            onClose={() => handleDeleteSkill(skill)}
+                        >
+                            {skill}
+                        </Tag>
                     ))}
                 </div>
-
+            
                 <Input
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
@@ -48,16 +65,18 @@ const Skills = () => {
                     style={{ width: 200, marginBottom: 10 }}
                 />
 
-                <Button type="primary" onClick={handleAddSkill}>Add Skill</Button>
+                <Button type="primary" onClick={handleAddSkill}>
+                    Add Skill
+                </Button>
             </Space>
-
+            
             <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Link to={ROUTE_CONSTANTS.PROFILE}>BACK</Link>
+                <Link to={ROUTE_CONSTANTS.EDUCATION}>BACK</Link>
                 <Button 
                     type="primary" 
                     loading={loading} 
                     onClick={handleSaveSkills} 
-                    disabled={loading || skills.length === 0} 
+                    disabled={loading || skills.length === 0}
                 >
                     NEXT
                 </Button>

@@ -1,136 +1,173 @@
-import React, { useState } from "react";
-import { Form, Input,Flex, Button, message, notification } from 'antd';
+import { useState, useEffect } from "react";
+import { Form, Input, Flex, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
-import ImgUpload from "../../components/sheared/ImgUpload"; // Ensure correct path
-import { ROUTE_CONSTANTS,  FIRESTORE_PATH_NAMES, STORAGE_PATH_NAMES } from "../../constants";
-import { db, storage } from '../../firebase';
-import { useDispatch, useSelector } from 'react-redux';
-import { setProfileImgUrl } from '../../state-managment/slices/userProfile';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import './index.css';
+import { useDispatch } from "react-redux";
+import { setProfileImgUrl } from "../../state-managment/slices/userProfile";
+import { ROUTE_CONSTANTS } from "../../constants";
+import "./index.css";
 
 const Profile = () => {
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const [form] = Form.useForm();
     const [uploading, setUploading] = useState(false);
-    const { authUserInfo: { userData } } = useSelector((store) => store.userProfile); 
-    const { uid } = userData;
-    const [progress, setProgress] = useState(0);
-    const [imageUrl, setImageUrl] = useState(""); 
+    const [form] = Form.useForm();
+    
+    const storedProfile = localStorage.getItem("profile");
+    const profileData = storedProfile ? JSON.parse(storedProfile) : {};
+
+    const [imageUrl, setImageUrl] = useState(profileData.imageUrl || "");
     const navigate = useNavigate();
+    
+    useEffect(() => {
+        form.setFieldsValue({
+            firstName: profileData.firstName || "",
+            lastName: profileData.lastName || "",
+            email: profileData.email || "",
+            phoneNumber: profileData.phoneNumber || "",
+            address: profileData.address || "",
+        });
+    }, []);
 
     const handleUserProfile = async (values) => {
         setLoading(true);
-        const { firstName, lastName, phoneNumber, address } = values;
+
+        const { firstName, lastName, email, phoneNumber, address } = values;
         
-        sessionStorage.setItem('profile', JSON.stringify({ firstName, lastName, phoneNumber, address, imageUrl }));
-                
-        message.success('Profile details saved successfully!');       
-        
+        localStorage.setItem(
+            "profile",
+            JSON.stringify({
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                address,
+                imageUrl,
+            })
+        );
+
+        message.success("Profile details saved successfully!");
         navigate(ROUTE_CONSTANTS.EDUCATION);
         setLoading(false);
     };
-
-    const handleUpload = ({file}) => {
-        setUploading(true);
-        const storageRef = ref(storage, `${STORAGE_PATH_NAMES.PROFILE_IMAGES}/${uid}`);
-           
-        const uploadTask = uploadBytesResumable(storageRef, file);
-      
-        uploadTask.on('state_changed', (snapshot) => {                
-            const progressValue = Math.round((snapshot.bytesTransferred/snapshot.totalBytes) * 100);
-            setProgress(progressValue);
-        },
-            (error) => {
-            setUploading(false);
-            setProgress(0);
-            message.error('Error aploading file: ${error.message');
-        },
-            () => {
-            getDownloadURL(uploadTask.snapshot.ref)
-            .then((imgUrl) => {
-                setUploading(false);
-                setProgress(0);                
-                dispatch(setProfileImgUrl(imgUrl));
-                setImageUrl(imgUrl);
-                updateUserProfileImg(imgUrl);
-                message.success('Upload successful');
-            })                
-        }
-      );
-    }  
-    //http://localhost:3000/logo192.png
-    const updateUserProfileImg = async (imgUrl) => {
-        try {
-            const userDocRef = doc(db, FIRESTORE_PATH_NAMES.REGISTERED_USERS, uid);
-            await updateDoc(userDocRef, { imgUrl });
-        } catch {
-            notification.error({
-                message: 'Error :('
-            });
-        }
-    }
     
+    const handleUpload = ({ file }) => {
+        if (!file) return;
+
+        setUploading(true);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imgUrl = e.target.result;
+
+            setImageUrl(imgUrl);
+            dispatch(setProfileImgUrl(imgUrl));
+            
+            localStorage.setItem(
+                "profile",
+                JSON.stringify({
+                    ...profileData,
+                    imageUrl: imgUrl,
+                })
+            );
+
+            setUploading(false);
+            message.success("Image uploaded successfully");
+        };
+
+        reader.readAsDataURL(file);
+    };
+
     return (
-        <div className='form_page_container'>
+        <div className="form_page_container">
             <Form layout="vertical" form={form} onFinish={handleUserProfile}>
-            <Form.Item
+                <Form.Item
                     label="First Name"
                     name="firstName"
                     rules={[
-                        { required: true, message: 'Please input your First Name!' }
+                        { required: true, message: "Please input your First Name!" },
                     ]}
                 >
-                    <Input type="text" placeholder="First Name" />
+                    <Input placeholder="First Name" />
                 </Form.Item>
+
                 <Form.Item
                     label="Last Name"
                     name="lastName"
                     rules={[
-                        { required: true, message: 'Please input your Last Name!' }
+                        { required: true, message: "Please input your Last Name!" },
                     ]}
                 >
-                    <Input type="text" placeholder="Last Name" />
+                    <Input placeholder="Last Name" />
+                </Form.Item>
+                
+                <Form.Item
+                    label="Email"
+                    name="email"
+                    rules={[
+                        { required: true, message: "Please input your Email!" },
+                        {
+                            type: "email",
+                            message: "Please enter a valid email address!",
+                        },
+                    ]}
+                >
+                    <Input placeholder="Email Address" />
                 </Form.Item>
 
                 <Form.Item
                     label="Phone Number"
                     name="phoneNumber"
                     rules={[
-                        { required: true, message: 'Please input your Phone Number!' }
+                        { required: true, message: "Please input your Phone Number!" },
                     ]}
                 >
-                    <Input type="text" placeholder="Phone Number" />
+                    <Input placeholder="Phone Number" />
                 </Form.Item>
 
                 <Form.Item
                     label="Address"
                     name="address"
                     rules={[
-                        { required: true, message: 'Please input your Address!' }
+                        { required: true, message: "Please input your Address!" },
                     ]}
                 >
-                    <Input type="text" placeholder="Address" />
+                    <Input placeholder="Address" />
                 </Form.Item>
-               
-                <Form.Item label="Profile Image">
-                    <ImgUpload
-                        handleUpload={handleUpload}
-                        progress={progress}
-                        uploading={uploading}
-                    />
-                </Form.Item>
+<div className="profile-image-section">
+
+  {imageUrl ? (
+    <img
+      src={imageUrl}
+      alt="Profile"
+      className="profile-preview"
+    />
+  ) : (
+    <div className="profile-placeholder">
+      No profile image selected
+    </div>
+  )}
+
+  <label className="custom-upload">
+    Choose Image
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => handleUpload({ file: e.target.files[0] })}
+    />
+  </label>
+
+</div>
+
+
                 <Flex align="flex-end" gap="10px" justify="flex-end">
-                <Button 
-                    type="primary"
-                    loading={loading}
-                    onClick={() => form.submit()}
-                    disabled={loading}
-                >
-                    NEXT
-                </Button>
+                    <Button
+                        type="primary"
+                        loading={loading}
+                        onClick={() => form.submit()}
+                        disabled={loading}
+                    >
+                        NEXT
+                    </Button>
                 </Flex>
             </Form>
         </div>
