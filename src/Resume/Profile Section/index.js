@@ -135,16 +135,12 @@ const Profile = () => {
                 </Form.Item>
 <div className="profile-image-section">
 
-  {imageUrl ? (
+  {imageUrl && (
     <img
       src={imageUrl}
       alt="Profile"
       className="profile-preview"
-    />
-  ) : (
-    <div className="profile-placeholder">
-      No profile image selected
-    </div>
+    />  
   )}
 
   <label className="custom-upload">
