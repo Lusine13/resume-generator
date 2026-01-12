@@ -9,18 +9,18 @@ const Education = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
-
+  
+  useEffect(() => {
   const storedEducation = localStorage.getItem("education");
   const educationData = storedEducation ? JSON.parse(storedEducation) : {};
 
-  useEffect(() => {
-    form.setFieldsValue({
-      degree: educationData.degree || "",
-      institution: educationData.institution || "",
-      department: educationData.department || "",
-      year: educationData.year || "",
-    });    
-  }, []);
+  form.setFieldsValue({
+    degree: educationData.degree || "",
+    institution: educationData.institution || "",
+    department: educationData.department || "",
+    year: educationData.year || "",
+  });
+}, [form]);
 
   const handleUserEducation = async (values) => {
     const { degree, institution, department, year } = values;

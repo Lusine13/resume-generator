@@ -10,10 +10,13 @@ const Skills = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        const storedSkills = localStorage.getItem("skills");
-        if (storedSkills) {
-            setSkills(JSON.parse(storedSkills));
-        }
+      try {
+       const storedSkills = localStorage.getItem("skills");
+       if (storedSkills) setSkills(JSON.parse(storedSkills));
+      } catch {
+        localStorage.removeItem("skills");
+        setSkills([]);
+      }
     }, []);
 
     const handleAddSkill = () => {

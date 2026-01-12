@@ -7,167 +7,174 @@ import { ROUTE_CONSTANTS } from "../../constants";
 import "./index.css";
 
 const Profile = () => {
-    const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [form] = Form.useForm();
+  
+  const storedProfile = localStorage.getItem("profile");
+  const initialProfile = storedProfile ? JSON.parse(storedProfile) : {};
+
+  const [imageUrl, setImageUrl] = useState(initialProfile.imageUrl || "");
+  
+  useEffect(() => {
+    const stored = localStorage.getItem("profile");
+    const profileData = stored ? JSON.parse(stored) : {};
+
+    form.setFieldsValue({
+      firstName: profileData.firstName || "",
+      lastName: profileData.lastName || "",
+      email: profileData.email || "",
+      phoneNumber: profileData.phoneNumber || "",
+      address: profileData.address || "",
+    });
     
-    const storedProfile = localStorage.getItem("profile");
-    const profileData = storedProfile ? JSON.parse(storedProfile) : {};
+    if (!imageUrl && profileData.imageUrl) {
+      setImageUrl(profileData.imageUrl);
+    }
+  }, [form]); 
 
-    const [imageUrl, setImageUrl] = useState(profileData.imageUrl || "");
-    const navigate = useNavigate();
-    
-    useEffect(() => {
-        form.setFieldsValue({
-            firstName: profileData.firstName || "",
-            lastName: profileData.lastName || "",
-            email: profileData.email || "",
-            phoneNumber: profileData.phoneNumber || "",
-            address: profileData.address || "",
-        });
-    }, []);
+  const handleUserProfile = async (values) => {
+    setLoading(true);
 
-    const handleUserProfile = async (values) => {
-        setLoading(true);
+    try {
+      const { firstName, lastName, email, phoneNumber, address } = values;
+      
+      localStorage.setItem(
+        "profile",
+        JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phoneNumber,
+          address,
+          imageUrl,
+        })
+      );
 
-        const { firstName, lastName, email, phoneNumber, address } = values;
-        
-        localStorage.setItem(
-            "profile",
-            JSON.stringify({
-                firstName,
-                lastName,
-                email,
-                phoneNumber,
-                address,
-                imageUrl,
-            })
-        );
+      message.success("Profile details saved successfully!");
+      navigate(ROUTE_CONSTANTS.EDUCATION);
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to save profile.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        message.success("Profile details saved successfully!");
-        navigate(ROUTE_CONSTANTS.EDUCATION);
-        setLoading(false);
+  const handleUpload = ({ file }) => {
+    if (!file) return;
+
+    setUploading(true);
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const imgUrl = e.target.result;
+
+      setImageUrl(imgUrl);
+      dispatch(setProfileImgUrl(imgUrl));
+      
+      const stored = localStorage.getItem("profile");
+      const profileData = stored ? JSON.parse(stored) : {};
+
+      localStorage.setItem(
+        "profile",
+        JSON.stringify({
+          ...profileData,
+          imageUrl: imgUrl,
+        })
+      );
+
+      setUploading(false);
+      message.success("Image uploaded successfully");
     };
-    
-    const handleUpload = ({ file }) => {
-        if (!file) return;
 
-        setUploading(true);
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const imgUrl = e.target.result;
-
-            setImageUrl(imgUrl);
-            dispatch(setProfileImgUrl(imgUrl));
-            
-            localStorage.setItem(
-                "profile",
-                JSON.stringify({
-                    ...profileData,
-                    imageUrl: imgUrl,
-                })
-            );
-
-            setUploading(false);
-            message.success("Image uploaded successfully");
-        };
-
-        reader.readAsDataURL(file);
+    reader.onerror = () => {
+      setUploading(false);
+      message.error("Failed to read image file.");
     };
 
-    return (
-        <div className="form_page_container">
-            <Form layout="vertical" form={form} onFinish={handleUserProfile}>
-                <Form.Item
-                    label="First Name"
-                    name="firstName"
-                    rules={[
-                        { required: true, message: "Please input your First Name!" },
-                    ]}
-                >
-                    <Input placeholder="First Name" />
-                </Form.Item>
+    reader.readAsDataURL(file);
+  };
 
-                <Form.Item
-                    label="Last Name"
-                    name="lastName"
-                    rules={[
-                        { required: true, message: "Please input your Last Name!" },
-                    ]}
-                >
-                    <Input placeholder="Last Name" />
-                </Form.Item>
-                
-                <Form.Item
-                    label="Email"
-                    name="email"
-                    rules={[
-                        { required: true, message: "Please input your Email!" },
-                        {
-                            type: "email",
-                            message: "Please enter a valid email address!",
-                        },
-                    ]}
-                >
-                    <Input placeholder="Email Address" />
-                </Form.Item>
+  return (
+    <div className="form_page_container">
+      <Form layout="vertical" form={form} onFinish={handleUserProfile}>
+        <Form.Item
+          label="First Name"
+          name="firstName"
+          rules={[{ required: true, message: "Please input your First Name!" }]}
+        >
+          <Input placeholder="First Name" />
+        </Form.Item>
 
-                <Form.Item
-                    label="Phone Number"
-                    name="phoneNumber"
-                    rules={[
-                        { required: true, message: "Please input your Phone Number!" },
-                    ]}
-                >
-                    <Input placeholder="Phone Number" />
-                </Form.Item>
+        <Form.Item
+          label="Last Name"
+          name="lastName"
+          rules={[{ required: true, message: "Please input your Last Name!" }]}
+        >
+          <Input placeholder="Last Name" />
+        </Form.Item>
 
-                <Form.Item
-                    label="Address"
-                    name="address"
-                    rules={[
-                        { required: true, message: "Please input your Address!" },
-                    ]}
-                >
-                    <Input placeholder="Address" />
-                </Form.Item>
-<div className="profile-image-section">
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: "Please input your Email!" },
+            { type: "email", message: "Please enter a valid email address!" },
+          ]}
+        >
+          <Input placeholder="Email Address" />
+        </Form.Item>
 
-  {imageUrl && (
-    <img
-      src={imageUrl}
-      alt="Profile"
-      className="profile-preview"
-    />  
-  )}
+        <Form.Item
+          label="Phone Number"
+          name="phoneNumber"
+          rules={[{ required: true, message: "Please input your Phone Number!" }]}
+        >
+          <Input placeholder="Phone Number" />
+        </Form.Item>
 
-  <label className="custom-upload">
-    Choose Image
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(e) => handleUpload({ file: e.target.files[0] })}
-    />
-  </label>
+        <Form.Item
+          label="Address"
+          name="address"
+          rules={[{ required: true, message: "Please input your Address!" }]}
+        >
+          <Input placeholder="Address" />
+        </Form.Item>
 
-</div>
+        <div className="profile-image-section">
+          {imageUrl && (
+            <img src={imageUrl} alt="Profile" className="profile-preview" />
+          )}
 
-
-                <Flex align="flex-end" gap="10px" justify="flex-end">
-                    <Button
-                        type="primary"
-                        loading={loading}
-                        onClick={() => form.submit()}
-                        disabled={loading}
-                    >
-                        NEXT
-                    </Button>
-                </Flex>
-            </Form>
+          <label className="custom-upload">
+            {uploading ? "Uploading..." : "Choose Image"}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleUpload({ file: e.target.files[0] })}
+              disabled={uploading}
+            />
+          </label>
         </div>
-    );
+
+        <Flex align="flex-end" gap="10px" justify="flex-end">
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={() => form.submit()}
+            disabled={loading || uploading}
+          >
+            NEXT
+          </Button>
+        </Flex>
+      </Form>
+    </div>
+  );
 };
 
 export default Profile;
