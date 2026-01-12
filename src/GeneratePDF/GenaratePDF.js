@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "antd";
 import { jsPDF } from "jspdf";
 
@@ -68,14 +67,25 @@ const GeneratePDF = () => {
       sectionTitle("Education");
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
-      doc.text(`${education.courseName || ""} – ${education.college || ""}`, LEFT, y);
-      next();
-      doc.text(
-        `Year: ${education.year || ""} | Percentage: ${education.percentage || ""}`,
-        LEFT,
-        y
-      );
-      next(12); 
+
+      if (education.degree) {
+        doc.text(`Degree: ${education.degree}`, LEFT, y);
+        next();
+      }
+      if (education.institution) {
+        doc.text(`Institution: ${education.institution}`, LEFT, y);
+        next();
+      }
+      if (education.department) {
+        doc.text(`Department: ${education.department}`, LEFT, y);
+        next();
+      }
+      if (education.year) {
+        doc.text(`Year: ${education.year}`, LEFT, y);
+        next();
+      }
+
+      next(10);
     };
 
     const renderSkills = () => {
@@ -86,7 +96,7 @@ const GeneratePDF = () => {
         doc.text(`• ${s}`, LEFT, y);
         next(5);
       });
-      next(10); 
+      next(10);
     };
 
     const renderProjects = () => {
@@ -108,7 +118,7 @@ const GeneratePDF = () => {
           next(5);
         });
 
-      next(12); 
+      next(12);
     };
 
     const renderSocial = () => {
@@ -129,13 +139,12 @@ const GeneratePDF = () => {
         next(5);
       }
 
-      next(10); 
+      next(10);
     };
 
-    /* ---------- MODERN  ---------- */
+    /* ---------- MODERN ---------- */
     const modern = async () => {
-      
-      doc.setFillColor(50, 111, 105); 
+      doc.setFillColor(50, 111, 105);
       doc.rect(0, 0, PAGE_W, 55, "F");
 
       await drawSquarePhoto(PAGE_W - 52, 14, 30);
@@ -147,11 +156,15 @@ const GeneratePDF = () => {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
+      
       doc.text(
-        [profile.email, profile.phoneNumber, profile.address].filter(Boolean).join(" • "),
+        [profile.email, profile.phoneNumber].filter(Boolean).join(" • "),
         LEFT,
         38
-      );
+      );      
+      if (profile.address) {
+        doc.text(profile.address, LEFT, 45);
+      }
 
       y = 70;
       doc.setTextColor(40, 40, 40);
@@ -164,7 +177,6 @@ const GeneratePDF = () => {
 
     /* ---------- MINIMAL ---------- */
     const minimal = async () => {
-    
       doc.setFillColor(247, 247, 247);
       doc.rect(0, 0, PAGE_W, PAGE_H, "F");
 
@@ -179,11 +191,16 @@ const GeneratePDF = () => {
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
+      
       doc.text(
-        [profile.email, profile.phoneNumber, profile.address].filter(Boolean).join(" | "),
+        [profile.email, profile.phoneNumber].filter(Boolean).join(" | "),
         LEFT + 6,
         TOP + 30
       );
+      
+      if (profile.address) {
+        doc.text(profile.address, LEFT + 6, TOP + 36);
+      }
 
       y = TOP + 60;
 
@@ -203,10 +220,9 @@ const GeneratePDF = () => {
       let yMain = 22;
 
       const paintCorporatePage = () => {
-        
         doc.setFillColor(246, 247, 251);
         doc.rect(0, 0, PAGE_W, PAGE_H, "F");
-        
+
         doc.setFillColor(33, 45, 64);
         doc.rect(0, 0, sideW, PAGE_H, "F");
       };
@@ -251,7 +267,6 @@ const GeneratePDF = () => {
 
       paintCorporatePage();
 
-      // photo 
       await drawSquarePhoto(18, 18, 26);
 
       let ySide = 52;
@@ -259,7 +274,6 @@ const GeneratePDF = () => {
       ySide = drawSidebarBlock("PHONE", profile.phoneNumber, ySide);
       ySide = drawSidebarBlock("ADDRESS", profile.address, ySide);
 
-      // socials in sidebar
       if (social.facebookLinkName || social.linkedinLinkName || social.otherLinkName) {
         doc.setDrawColor(255);
         doc.setLineWidth(0.3);
@@ -271,7 +285,6 @@ const GeneratePDF = () => {
         ySide = drawSidebarBlock("WEBSITE", social.otherLinkName, ySide);
       }
 
-      // name
       doc.setFont("helvetica", "bold");
       doc.setFontSize(24);
       doc.setTextColor(25, 25, 25);
@@ -282,23 +295,33 @@ const GeneratePDF = () => {
       doc.line(xMain, yMain, xMain + mainW, yMain);
       nextMain(14);
 
-      // education
+      // Education
       sectionTitleMain("Education");
       doc.setFont("helvetica", "normal");
       doc.setFontSize(11);
       doc.setTextColor(40, 40, 40);
-      doc.text(`${education.courseName || ""} – ${education.college || ""}`, xMain, yMain);
-      nextMain(6);
-      doc.setFontSize(10);
-      doc.setTextColor(90, 90, 90);
-      doc.text(
-        `Year: ${education.year || ""} | Percentage: ${education.percentage || ""}`,
-        xMain,
-        yMain
-      );
-      nextMain(14);
 
-      // skills
+      if (education.degree) {
+        doc.text(`Degree: ${education.degree}`, xMain, yMain);
+        nextMain(6);
+      }
+      if (education.institution) {
+        doc.text(`Institution: ${education.institution}`, xMain, yMain);
+        nextMain(6);
+      }
+      if (education.department) {
+        doc.text(`Department: ${education.department}`, xMain, yMain);
+        nextMain(6);
+      }
+      if (education.year) {
+        doc.setFontSize(10);
+        doc.setTextColor(90, 90, 90);
+        doc.text(`Year: ${education.year}`, xMain, yMain);
+        nextMain(8);
+      }
+      nextMain(6);
+
+      // Skills
       sectionTitleMain("Skills");
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
@@ -309,7 +332,7 @@ const GeneratePDF = () => {
       });
       nextMain(12);
 
-      // projects
+      // Projects
       sectionTitleMain("Projects");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
@@ -329,7 +352,7 @@ const GeneratePDF = () => {
         doc.text(l, xMain, yMain);
         nextMain(5);
       });
-      nextMain(12);      
+      nextMain(12);
     };
 
     /* ---------- SWITCH ---------- */

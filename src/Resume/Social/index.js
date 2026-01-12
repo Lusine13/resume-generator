@@ -9,21 +9,17 @@ import "./index.css";
 const Social = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-
-  // Load saved social links
-  const storedSocialLinks = localStorage.getItem("socialLinks");
-  const socialLinksData = storedSocialLinks
-    ? JSON.parse(storedSocialLinks)
-    : {};
-
-  // Prefill form
+  
   useEffect(() => {
+    const storedSocialLinks = localStorage.getItem("socialLinks");
+    const socialLinksData = storedSocialLinks ? JSON.parse(storedSocialLinks) : {};
+
     form.setFieldsValue({
       facebookLinkName: socialLinksData.facebookLinkName || "",
       linkedinLinkName: socialLinksData.linkedinLinkName || "",
       otherLinkName: socialLinksData.otherLinkName || "",
     });
-  }, []);
+  }, [form]);
 
   const handleUserSocialLinks = async (values) => {
     const { facebookLinkName, linkedinLinkName, otherLinkName } = values;
@@ -82,15 +78,9 @@ const Social = () => {
 
           <GeneratePDF />
 
-          {/* Template selector (aligned perfectly) */}
+          {/* Template selector */}
           <Flex align="center" gap="6px">
-            <span
-              style={{
-                fontSize: 13,
-                color: "#666",
-                lineHeight: "32px", // key alignment fix
-              }}
-            >
+            <span style={{ fontSize: 13, color: "#666", lineHeight: "32px" }}>
               Template:
             </span>
             <TemplateSelector />
