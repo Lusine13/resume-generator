@@ -20,21 +20,22 @@ const Profile = () => {
   const [imageUrl, setImageUrl] = useState(initialProfile.imageUrl || "");
   
   useEffect(() => {
-    const stored = localStorage.getItem("profile");
-    const profileData = stored ? JSON.parse(stored) : {};
+  const stored = localStorage.getItem("profile");
+  const profileData = stored ? JSON.parse(stored) : {};
 
-    form.setFieldsValue({
-      firstName: profileData.firstName || "",
-      lastName: profileData.lastName || "",
-      email: profileData.email || "",
-      phoneNumber: profileData.phoneNumber || "",
-      address: profileData.address || "",
-    });
-    
-    if (!imageUrl && profileData.imageUrl) {
-      setImageUrl(profileData.imageUrl);
-    }
-  }, [form]); 
+  form.setFieldsValue({
+    firstName: profileData.firstName || "",
+    lastName: profileData.lastName || "",
+    email: profileData.email || "",
+    phoneNumber: profileData.phoneNumber || "",
+    address: profileData.address || "",
+  });
+
+  if (!imageUrl && profileData.imageUrl) {
+    setImageUrl(profileData.imageUrl);
+  }
+}, [form, imageUrl]);
+
 
   const handleUserProfile = async (values) => {
     setLoading(true);
